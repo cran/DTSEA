@@ -1,0 +1,117 @@
+---
+title: "DTSEA User Guide"
+author: "Yinchun Su, Junwei Han"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DTSEA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(DTSEA)
+```
+
+### Introduction
+
+The Drug Target Set Enrichment Analysis (DTSEA) is a novel tool used to identify the most effective drug set against a particular disease based on the Gene Set Enrichment Analysis (GSEA).
+
+The central hypothesis of DTSEA is that the targets of potential candidates for a specific disease (e.g., COVID-19) ought to be close to each other, or at least not so far away from the disease. The DTSEA algorithm determines whether a drug is potent for the chosen disease by the proximity between drug targets and the disease-related genes. Under the central hypothesis of DTSEA, the DTSEA consists of two main parts:
+
+1. Evaluate the influence of the specific disease in the PPI network by the random walk with restart algorithm.
+
+To evaluate the influence, we compute the disease-node distance by using the random walk with restart (RwR) algorithm, then rank the nodes reversely.
+
+2. Evaluate the drug-disease associations based on GSEA.
+
+The GSEA approach is adopted in this part to identify whether candidate drug targets are disease-related (top) or disease-unrelated (bottom) on the human PPI list. The specific disease gene list is normalized by the median and is set zero as the arbitrary cutoff point to classify the relations manually.
+
+This vignette illustrates how to use the **DTSEA** easily. Here, using functions in this package, users could identify potential drugs for disease by the DTSEA algorithm.
+
+### Example 1: Calculate the enrichment scores of drugs.
+
+The function `DTSEA` is used to calculate the enrichment scores of drugs. The parameters are as follows:
+
+-   `network`: The human protein-protein interactome network. It should be or be preconverted before being inputted in DTSEA.
+-   `disease`: The disease-related nodes.
+-   `drugs`: The drug-target long format dataframe. It includes at least columns with the drug_id and drug_target.
+-   `rwr.pt`: The random walk p0 vector. Set it to zero if you wish DTSEA automatically compute it, or you can provide your predetermined p0 vector.
+-   `sampleSize`: The size of a randomly selected gene collection, where size = pathwaySize
+-   `minSize`: Minimal set of a drug set to be tested.
+-   `maxSize`: Maximal set of a drug set to be tested.
+-   `nproc`: The CPU workers that fgsea would utilize.
+-   `eps`: The boundary of calculating the p value.
+-   `nPermSimple`: Number of permutations in the simple fgsea implementation for preliminary estimation of P-values.
+-   `gseaParam`: GSEA parameter value, all gene-level statistics are raised to the power of 'gseaParam' before calculating GSEA enrichment scores.
+-   `verbose`: Show the messages.
+
+```{r echo = FALSE}
+# Load the data
+data("example_disease_list", package = "DTSEA")
+data("example_drug_target_list", package = "DTSEA")
+data("example_ppi", package = "DTSEA")
+
+# Perform a simple DTSEA analysis using default optional parameters. 
+result <- DTSEA(network = example_ppi,
+                disease = example_disease_list,
+                drugs = example_drug_target_list
+)
+```
+
+You can arrange the positive results by NES
+
+```{r}
+library(dplyr)
+select(result, -leadingEdge) %>%
+  arrange(desc(NES)) %>%
+  filter(NES > 0 & pval < .05)
+```
+
+### Example 2. Get the influence of the specific disease in the PPI network
+
+The function `random.walk` calculates the `pt` vector. The parameters are as follows:
+
+-   `network` The input graph object. It should be either igraph object or edge list matrix / data frame.
+-   `p0` The starting vector on time 0.
+-   `edge_weight` Logical to indicate whether the input graph contains weight information.
+-   `gamma` The restart probability used for RwR. The `gamma` takes the value from 0 to 1, controlling the probability that a node would go back to its starting node.
+-   `threshold` The threshold used for RwR. The `threshold` indicates the stabilization status, which is a stopping criterion of RwR.
+-   `pt.post.processing` The way to scale the `pt` vector. It can be 'none', 'zscore', and 'log'.
+-   `pt.align` The way to normalize the output `pt` vector. It can be 'mean' to manually cut the up- and down-regulated genes, 'median' to avoid the influence of the distribution shape, or 'none' for no normalization.
+
+```{r}
+# Calculate p0
+p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
+
+# Then perform random walk
+random.walk(network = example_ppi, p0 = p0)
+```
+
+### Example 3. Calculate the consistency of the prediction
+
+The function `cronbach.alpha` and `kendall.w` are used to calculate the prediction consistency.
+
+If you have several prediction results, you can use either function to describe the consistency.
+
+```{r echo = FALSE}
+# Imagine there are three prediction results with ten samples
+x <- runif(10, min = 0, max = 5)
+y <- runif(10, min = 0, max = 5)
+z <- sqrt(x + y) + runif(10, min = -1, max = 1)
+data <- data.frame(x, y, z)
+```
+
+```{r}
+# Just report the results
+kendall.w(data)$report
+
+# Or just report the alpha
+cronbach.alpha(data)
+```

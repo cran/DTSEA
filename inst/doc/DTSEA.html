@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Yinchun Su, Junwei Han" />
+
+
+<title>DTSEA User Guide</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">DTSEA User Guide</h1>
+<h4 class="author">Yinchun Su, Junwei Han</h4>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DTSEA)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; This package SHOULD NOT BE USED UNDER INTEL MATH KERNEL LIBRARY ON ANY OCCASION.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; There is an avoidable but critical bug with Intel Math Kernel Library (MKL) on various operating systems.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ======================================</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; For better performance, we recommend not using RStudio on Windows because RStudio cannot take advantage of the multi-core capabilities available on modern computers.</span></span></code></pre></div>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>The Drug Target Set Enrichment Analysis (DTSEA) is a novel tool used
+to identify the most effective drug set against a particular disease
+based on the Gene Set Enrichment Analysis (GSEA).</p>
+<p>The central hypothesis of DTSEA is that the targets of potential
+candidates for a specific disease (e.g., COVID-19) ought to be close to
+each other, or at least not so far away from the disease. The DTSEA
+algorithm determines whether a drug is potent for the chosen disease by
+the proximity between drug targets and the disease-related genes. Under
+the central hypothesis of DTSEA, the DTSEA consists of two main
+parts:</p>
+<ol style="list-style-type: decimal">
+<li>Evaluate the influence of the specific disease in the PPI network by
+the random walk with restart algorithm.</li>
+</ol>
+<p>To evaluate the influence, we compute the disease-node distance by
+using the random walk with restart (RwR) algorithm, then rank the nodes
+reversely.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Evaluate the drug-disease associations based on GSEA.</li>
+</ol>
+<p>The GSEA approach is adopted in this part to identify whether
+candidate drug targets are disease-related (top) or disease-unrelated
+(bottom) on the human PPI list. The specific disease gene list is
+normalized by the median and is set zero as the arbitrary cutoff point
+to classify the relations manually.</p>
+<p>This vignette illustrates how to use the <strong>DTSEA</strong>
+easily. Here, using functions in this package, users could identify
+potential drugs for disease by the DTSEA algorithm.</p>
+</div>
+<div id="example-1-calculate-the-enrichment-scores-of-drugs." class="section level3">
+<h3>Example 1: Calculate the enrichment scores of drugs.</h3>
+<p>The function <code>DTSEA</code> is used to calculate the enrichment
+scores of drugs. The parameters are as follows:</p>
+<ul>
+<li><code>network</code>: The human protein-protein interactome network.
+It should be or be preconverted before being inputted in DTSEA.</li>
+<li><code>disease</code>: The disease-related nodes.</li>
+<li><code>drugs</code>: The drug-target long format dataframe. It
+includes at least columns with the drug_id and drug_target.</li>
+<li><code>rwr.pt</code>: The random walk p0 vector. Set it to zero if
+you wish DTSEA automatically compute it, or you can provide your
+predetermined p0 vector.</li>
+<li><code>sampleSize</code>: The size of a randomly selected gene
+collection, where size = pathwaySize</li>
+<li><code>minSize</code>: Minimal set of a drug set to be tested.</li>
+<li><code>maxSize</code>: Maximal set of a drug set to be tested.</li>
+<li><code>nproc</code>: The CPU workers that fgsea would utilize.</li>
+<li><code>eps</code>: The boundary of calculating the p value.</li>
+<li><code>nPermSimple</code>: Number of permutations in the simple fgsea
+implementation for preliminary estimation of P-values.</li>
+<li><code>gseaParam</code>: GSEA parameter value, all gene-level
+statistics are raised to the power of ‘gseaParam’ before calculating
+GSEA enrichment scores.</li>
+<li><code>verbose</code>: Show the messages.</li>
+</ul>
+<pre><code>#&gt; Random walking...
+#&gt; 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |==                                                                    |   3%
+  |                                                                            
+  |=========                                                             |  12%
+  |                                                                            
+  |===============                                                       |  21%
+  |                                                                            
+  |====================                                                  |  29%
+  |                                                                            
+  |==========================                                            |  37%
+  |                                                                            
+  |==============================                                        |  43%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |=======================================                               |  56%
+  |                                                                            
+  |============================================                          |  63%
+  |                                                                            
+  |================================================                      |  69%
+  |                                                                            
+  |=====================================================                 |  75%
+  |                                                                            
+  |=========================================================             |  82%
+  |                                                                            
+  |=============================================================         |  88%
+  |                                                                            
+  |==================================================================    |  94%
+  |                                                                            
+  |======================================================================| 100%
+#&gt; Doing GSEA enrichment...
+#&gt; Warning in preparePathwaysAndStats(pathways, stats, minSize, maxSize, gseaParam, : There are ties in the preranked stats (11.74% of the list).
+#&gt; The order of those tied genes will be arbitrary, which may produce unexpected results.</code></pre>
+<p>You can arrange the positive results by NES</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(result, <span class="sc">-</span>leadingEdge) <span class="sc">%&gt;%</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(NES)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(NES <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> pval <span class="sc">&lt;</span> .<span class="dv">05</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 7</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 7 variables: drug_id &lt;chr&gt;, pval &lt;dbl&gt;, padj &lt;dbl&gt;, log2err &lt;dbl&gt;,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ES &lt;dbl&gt;, NES &lt;dbl&gt;, size &lt;int&gt;</span></span></code></pre></div>
+</div>
+<div id="example-2.-get-the-influence-of-the-specific-disease-in-the-ppi-network" class="section level3">
+<h3>Example 2. Get the influence of the specific disease in the PPI
+network</h3>
+<p>The function <code>random.walk</code> calculates the <code>pt</code>
+vector. The parameters are as follows:</p>
+<ul>
+<li><code>network</code> The input graph object. It should be either
+igraph object or edge list matrix / data frame.</li>
+<li><code>p0</code> The starting vector on time 0.</li>
+<li><code>edge_weight</code> Logical to indicate whether the input graph
+contains weight information.</li>
+<li><code>gamma</code> The restart probability used for RwR. The
+<code>gamma</code> takes the value from 0 to 1, controlling the
+probability that a node would go back to its starting node.</li>
+<li><code>threshold</code> The threshold used for RwR. The
+<code>threshold</code> indicates the stabilization status, which is a
+stopping criterion of RwR.</li>
+<li><code>pt.post.processing</code> The way to scale the <code>pt</code>
+vector. It can be ‘none’, ‘zscore’, and ‘log’.</li>
+<li><code>pt.align</code> The way to normalize the output
+<code>pt</code> vector. It can be ‘mean’ to manually cut the up- and
+down-regulated genes, ‘median’ to avoid the influence of the
+distribution shape, or ‘none’ for no normalization.</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p0</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>p0 <span class="ot">&lt;-</span> <span class="fu">calculate_p0</span>(<span class="at">nodes =</span> example_ppi, <span class="at">disease =</span> example_disease_list)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Then perform random walk</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">random.walk</span>(<span class="at">network =</span> example_ppi, <span class="at">p0 =</span> p0)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       STAT1      IL1RAP       MYD88      MAPK14        JAK2       IRAK1 </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4.38701169  4.30737409  4.25188979  4.16908854  4.16503271  4.15789286 </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       TRAF1        TLR4        IL1B       IL2RA         AGT       IRAK2 </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4.15178891  4.11965253  4.11770168  4.06488697  4.03783534  4.03336011 </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         IL6        JAK1         PML        C1QA        ETS1          C2 </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4.01463662  4.00768863  4.00596675  4.00213414  3.99983386  3.99847197 </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        NT5E    SERPING1        IRF7        TLR2        C1QB        MBL2 </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.98335137  3.97970848  3.97851989  3.97616137  3.96910325  3.96673811 </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       IFI16       CCND3       C1QBP       IL2RG       PRKCD      TOLLIP </span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.95323306  3.94642847  3.94432859  3.94280132  3.94220196  3.94070406 </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      NFATC3      CDKN1A       IL23A      NFKBIA       CD247       CASP1 </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.93970313  3.93796030  3.93647457  3.93523591  3.93140067  3.92811064 </span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          F2       STAT4        CCR5      STING1        IRF5       GAPDH </span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.92750167  3.92561996  3.91887581  3.91576054  3.90930125  3.90469456 </span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         MBP       SOCS1       PTGS2       MALT1       NLRP3        IL7R </span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.90376816  3.90285509  3.90193402  3.90057877  3.90023935  3.89351485 </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CCR2        CCR6       ITGAM       IRAK3       CD274       CSF3R </span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.89296010  3.89296010  3.89290581  3.89268002  3.89093980  3.88928847 </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PTAFR       LTB4R         LTF       IFIH1      IL18R1        CD46 </span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.88895931  3.88680801  3.88524107  3.88505320  3.87774449  3.87771671 </span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         SKI        TLR5       IL1RN        TCF7        IRF4        CD28 </span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.87521895  3.87462430  3.87433760  3.87234853  3.87102120  3.87044348 </span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         MAF     TNFRSF9         BAX       TGFB1      PECAM1       CD163 </span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.86986001  3.86919740  3.86861504  3.86689863  3.86026731  3.85883368 </span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         ACE         ADA       EEF1G      FCER1G         C8A        IL16 </span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.85833543  3.85800541  3.85780874  3.85565345  3.85549815  3.85319778 </span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        TAP1       FKBP5       PSMC2        XBP1      S100A9         MX1 </span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.85214404  3.85077421  3.85028943  3.84954512  3.84867092  3.84838877 </span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MS4A1        BST2      B3GAT1        LTBR      CX3CR1   TNFRSF10C </span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.84763941  3.84644867  3.84618465  3.84589444  3.84537511  3.84496091 </span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       ICAM3       LAIR1      LILRA6      LILRB4        ATG7      IFITM1 </span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.84315301  3.84302474  3.84262790  3.84262790  3.84239112  3.84168233 </span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CD40LG      ADGRE5       NFKB1         SYK         SRC        TP53 </span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.84105370  3.83965498  3.67472363  3.57733466  3.26402290  3.22414317 </span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          C3        ESR1         CSK      PIK3R1        TBK1         TNF </span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3.04802687  2.93527627  2.90788374  2.88969069  2.87025710  2.86434047 </span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PRKCQ        JAK3       IKBKE        SDC2       APOA1        EGFR </span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.84667962  2.81566863  2.80198798  2.79253555  2.77076326  2.75539424 </span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MAPK1       MAPK3        MTOR      MAPK13       CALM1         LCK </span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.74091869  2.71134443  2.67836336  2.66053057  2.62877491  2.60600596 </span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       HIF1A       IKBKB        KNG1         FYN        CHUK      PIK3CA </span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.58173530  2.56795038  2.56051772  2.55854267  2.54630160  2.53579939 </span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LYN     CSNK2A1      MAP3K1       IRAK4         APP        AKT1 </span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.49121008  2.42586569  2.40630756  2.40290900  2.37670015  2.35348677 </span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        TUBB      PIK3CB       MAPK9      MAPK10      STAT5B      PIK3R2 </span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.33273555  2.26342349  2.26331332  2.25217495  2.24130437  2.24050626 </span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      PIK3CD         C4B         C4A        SNCA      PIK3R3        PTK2 </span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.23863782  2.20060511  2.19504960  2.19358930  2.15812888  2.15582429 </span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       RIPK2          C5        ERN1       PRKCG        HBA1         HBB </span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.15533667  2.14044941  2.13130165  2.11331085  2.09246440  2.09246440 </span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         C1S       HIPK2        C1QC        TYK2        SOD1       RIPK1 </span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2.06078674  2.03519288  2.02961417  2.01331274  2.00808897  2.00089712 </span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          CP       PDIA3       GSK3B         MYC       CCND1       NR3C1 </span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.98812109  1.98058938  1.97141850  1.97090086  1.95009823  1.90365863 </span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          AR      PIK3CG       CASP3        NOS2      PRKACA        FCN3 </span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.89367014  1.89144514  1.88787914  1.86914056  1.82219486  1.82037801 </span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         BTK         VTN      MAP2K6       ANXA1         C1R      PIK3R5 </span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.81567558  1.81508004  1.80113028  1.78611129  1.78218134  1.76966374 </span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     CSNK2A2        AKT3        PAK1        AKT2      S100A8         JUP </span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.76887994  1.76423639  1.74844321  1.74578839  1.71003926  1.70419801 </span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      MAP2K3        ACE2      BDKRB1       PDPK1       CREB1       IL2RB </span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.64606502  1.63924393  1.63177562  1.62644211  1.59974425  1.59136733 </span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        DRD1         PGR      PDGFRB         IL3      MTNR1A        YES1 </span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.58812108  1.58255185  1.58146911  1.57837052  1.56997662  1.55950959 </span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      MAP3K3       ERBB2      CAMK2B        CDK4      CSF2RB       PTK2B </span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.53804063  1.53736870  1.53256669  1.51455270  1.51073272  1.49719504 </span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        TLR9      PDGFRA        MMP2       HSPA8        TLR7      GRIN2B </span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.45916893  1.45078223  1.43340822  1.42441869  1.42071789  1.41094675 </span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         C8G      GRIN2A         C8B      CAMK2A         FN1      CSF2RA </span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.39983503  1.38000317  1.37970886  1.37817395  1.36791859  1.35880873 </span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      GRIN2D      TGFBR1      PRKACB      FCGR3A       IL3RA         CFI </span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.34084145  1.33426021  1.32955896  1.32821020  1.31434794  1.31293402 </span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         KIT      TUBA3C         CFB      FCGR3B      ADRA1B      EEF1A1 </span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.30936131  1.29528036  1.28476211  1.21594994  1.20513355  1.19768769 </span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CDK1      IFNAR1       HTR2A       VEGFA       PRKD1         HCK </span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.18981104  1.18198983  1.18113584  1.18111479  1.16063919  1.15702306 </span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PARP1        PCNA       OPRD1      TUBB4A       PRKCI       EDNRA </span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.15532616  1.15055644  1.14426586  1.14119971  1.12621311  1.12451937 </span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      TGFBR2         ITK        BRAF      ADRA1A      IFNAR2       BRCC3 </span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.11903965  1.10879796  1.10625356  1.10294493  1.10076800  1.09813916 </span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       CHRM3       FGFR3       HTR2B      ADRA1D       ERBB4       CHRM1 </span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.09470994  1.09156667  1.08666793  1.08227696  1.08210302  1.07918857 </span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       CHRM5        HRH1       TACR1        RAF1         VDR         TEK </span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.07918857  1.07918857  1.07918857  1.07798536  1.06083117  1.05784340 </span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CAMK2D         F12       HDAC1        MDM2         A2M       OPRM1 </span></span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.05376231  1.04844209  1.04829885  1.03880814  1.03272295  1.03238071 </span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     EIF2AK2      MTNR1B       ZAP70       TUBB3        DRD2        ABL1 </span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.03182198  1.02837550  1.02773836  1.02131330  1.02078732  1.01673894 </span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      ADORA3      ADRA2C       CHRM2       CHRM4        HRH4       HTR1A </span></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.01396245  1.01396245  1.01396245  1.01396245  1.01396245  1.01396245 </span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       HTR1B       HTR1D       HTR1E       HTR1F       OPRK1      FCGR2A </span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1.01396245  1.01396245  1.01396245  1.01396245  1.01396245  1.00367013 </span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MAPK7       GRIN1      FCGR1A       FGFR2       FGFR1       PRKCE </span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.99871456  0.97520735  0.97234658  0.96742643  0.94948161  0.91910577 </span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       ITGB3        PAK2        INSR        RBX1         FGA       HSPA5 </span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.91013154  0.90127560  0.80782914  0.80307139  0.75847664  0.74135852 </span></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       KCNJ4        TP73        DRD3       LIMK1       MAPK6        SELE </span></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.73332628  0.71746237  0.70792579  0.70078230  0.67008037  0.63783393 </span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        PIM1       ADRB2         TEC        KRT1       KCNJ2        MMP9 </span></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.63775183  0.63752110  0.63328527  0.63178284  0.59869683  0.56833028 </span></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    MAPKAPK5       C4BPA      SLC2A1         AXL     RPS6KA1       AURKA </span></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.51979048  0.49689235  0.49358427  0.49305428  0.48477289  0.47453927 </span></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       SIRT1         PZP        APCS      FCGR2C         DSP      TUBA1A </span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.45907203  0.45528753  0.45262224  0.44506796  0.44235591  0.44141729 </span></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         KDR      DYRK1B       C4BPB       MAPK4         HPR      IGFALS </span></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.43724188  0.42850759  0.42809668  0.36924205  0.34146894  0.33495379 </span></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      MAP2K2       HIPK3        PAK3       APOL1     CSNK1A1         CFH </span></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.33215315  0.32646779  0.32033314  0.31948655  0.29744619  0.29679488 </span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       ITGA5       STK39       PRDX1      MAP3K2      GABRB1         BCR </span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.28914839  0.24069779  0.18841078  0.17766633  0.17129435  0.15630617 </span></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      TUBB2B         FGR       MKNK1         INS       PDE1A      MAPK15 </span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.15332004  0.14905980  0.14551103  0.13369752  0.12949984  0.12680317 </span></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       RCAN1      TUBA1B         CLU      TUBA4A       ALOX5         MET </span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.11492500  0.09588107  0.09318039  0.08977558  0.08117469  0.06575737 </span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PPARA       APOA2      ALOX15       ALDOA       EPHB2       PTGDS </span></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.05543149  0.05010703  0.03703279  0.01617541  0.00000000 -0.02179376 </span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        NPPB        GJA1         FES         BMX        FLT1       PDE6G </span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.03685839 -0.06480503 -0.06719487 -0.07384513 -0.07746998 -0.08182198 </span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CAMK2G        P4HB       PDE3B        APOE       CSF1R         ALK </span></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.08449631 -0.10273148 -0.12187141 -0.12234875 -0.13426309 -0.13922150 </span></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      PI4K2B        TLK1       ACVR1       NTRK3        TPI1       PDE1B </span></span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.15177764 -0.16966605 -0.16982699 -0.17670834 -0.17847530 -0.19207530 </span></span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PDE1C       EPHB1       EPHB4       PDE4B       BMPR2        FLT3 </span></span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.19207530 -0.20102624 -0.20649820 -0.20839147 -0.21015412 -0.21095020 </span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PDE4A     RPS6KA3        TLK2       CAMK1       PDE6A       PDE6B </span></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.21901408 -0.22263188 -0.23217379 -0.23715159 -0.25181963 -0.25181963 </span></span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      PDE10A       GSK3A         TXK      BMPR1B       PDE4C       PDE4D </span></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.25660468 -0.26216369 -0.27210694 -0.27819411 -0.28369770 -0.28369770 </span></span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       ROCK2        NEK9     RPS6KA6       PDE3A       BMP2K        CLK1 </span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.29487952 -0.29548858 -0.31454434 -0.31657884 -0.34472708 -0.34472708 </span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        MELK       STK16        CASK       PDE5A         GSS       CHEK2 </span></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.34472708 -0.34472708 -0.36650929 -0.37193837 -0.39032070 -0.39379955 </span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        NOS1       PDE2A       PDE6C       PDE6D       PDE6H       PDE7A </span></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.43408722 -0.43949726 -0.43949726 -0.43949726 -0.43949726 -0.43949726 </span></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PDE7B       PDE8A       PDE8B       PDE9A         TTR       VCAM1 </span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.43949726 -0.43949726 -0.43949726 -0.43949726 -0.46696471 -0.46812713 </span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     EIF2AK4        PLK1        A1BG       DAPK3      MAP3K4        PAK6 </span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.47399402 -0.49961054 -0.50525933 -0.51587155 -0.51927190 -0.52122347 </span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         RET     EIF2AK1         GSN         FER       EPHA3       L1CAM </span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.52925055 -0.54417557 -0.54554914 -0.55188302 -0.55266663 -0.56888415 </span></span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       TAOK3        F13B    SERPIND1      FCGR2B       MKNK2       PRKG2 </span></span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.57155298 -0.57230800 -0.57230800 -0.60664819 -0.61843221 -0.61900615 </span></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CTSL      CHRNA9      MAP4K1       TUBB6       EPHA2       MST1R </span></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.62793197 -0.64722832 -0.68367659 -0.68410326 -0.74689785 -0.76335088 </span></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     SLC18A2     MAP3K11         CCS        SDHA       CHEK1      GABRA1 </span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.80196763 -0.80493123 -0.80532175 -0.80532175 -0.81423402 -0.81480108 </span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      PRKAA1      PRKAB1       KHSRP     CACNA1D      PRKAA2      DYRK1A </span></span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.81532851 -0.81631825 -0.83188242 -0.84007760 -0.85396954 -0.86565247 </span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        ABL2       GRIA1        CTSS        PRG2        ORM1      CHRNA7 </span></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.86861281 -0.87342834 -0.88042620 -0.89560990 -0.89601491 -0.89660410 </span></span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      PRKAB2      PRKAG1      PRKAG2      PRKAG3       GRIA2        MYLK </span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.89716708 -0.89716708 -0.89716708 -0.89716708 -0.92177302 -0.93400112 </span></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     CACNA1C      TUBB4B       EPHA4        PON1     PIP4K2B     PIP4K2C </span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.94009780 -0.94843248 -0.96809925 -0.98269935 -0.99556773 -0.99556773 </span></span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       GRIA3       ADRB3        LRAT        DDB1       EPHA8       NTRK1 </span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.99627714 -1.00499769 -1.00793230 -1.00951640 -1.02833056 -1.05615212 </span></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MARK4        HTR6       MYLK2      ADRA2A        FLT4        PKN1 </span></span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.05619832 -1.09768413 -1.09771133 -1.10673946 -1.10826808 -1.10978132 </span></span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       EPHA1       EPHA5       EPHA7       GRIA4       RIPK4        MATK </span></span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.11446172 -1.11446172 -1.11446172 -1.11878440 -1.13297185 -1.13599459 </span></span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CPN1      TUBA1C      TUBA3E      CHRNA3      CHRNA4      CHRNA6 </span></span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.15122072 -1.15262569 -1.15262569 -1.16606613 -1.16606613 -1.16606613 </span></span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CHRNB2      CHRNB4        PLK4        DRD5        HTR7        SHBG </span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.16606613 -1.16606613 -1.19299386 -1.22031083 -1.22031083 -1.22385880 </span></span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       PTGS1        ENO1       PPARG        NEK2      CLASP1        PKN2 </span></span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.26245351 -1.27623940 -1.28990093 -1.29652839 -1.30158706 -1.31473569 </span></span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     CACNA1F     CACNA1S       LIMK2      S100A7       INSRR       MARK3 </span></span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.31507896 -1.31507896 -1.34811302 -1.35065515 -1.35230695 -1.35297620 </span></span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       TAOK2        WEE1        PLK3       KRT10       TUBB1       CUL4A </span></span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.40401379 -1.40669937 -1.44861483 -1.46375161 -1.46834592 -1.49293688 </span></span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       HDAC4      TUBB2A        ULK1       TAOK1       MYLK3       MYLK4 </span></span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.50957228 -1.51821274 -1.55665254 -1.56007205 -1.56966693 -1.56966693 </span></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       NR0B1         AHR       NR3C2       KLKB1      MAP2K5       TYRO3 </span></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.59782766 -1.62976772 -1.63707628 -1.63895437 -1.65678124 -1.65847824 </span></span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       TUBB8     PIK3C2B      TSSK1B       HDAC8        KRT5          TF </span></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.67456622 -1.70688760 -1.72608882 -1.72983522 -1.76063896 -1.77067116 </span></span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      NDUFC2      NDUFV3        MGMT         BLK        ULK2        IGHM </span></span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.81004541 -1.81004541 -1.81313702 -1.83348856 -1.84786760 -1.85097942 </span></span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       DAPK2         TTK     CACNA1G       SIVA1         GAK      CAMKK1 </span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.85925108 -1.91217605 -1.91654251 -1.91892030 -1.91975739 -1.92046898 </span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CAMKK2      MAP3K6       DAPK1     CACNA1H     CACNA1I        MT1A </span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.94206860 -1.94242064 -1.95120402 -1.97984473 -1.97984473 -1.98716282 </span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      S100A2     SLC7A11       KRT14      CACNG2      CACNG4       PI4KB </span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.98716282 -1.98716282 -2.03903908 -2.07327805 -2.07328544 -2.07349753 </span></span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CSN3      CACNG3       MMP12      CACNB3      CACNB1      CACNB4 </span></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.07415019 -2.08324895 -2.10144086 -2.10739342 -2.12626863 -2.12626863 </span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        TNK2      GABRA4        SGK3    CACNA2D2       LATS1      CACNB2 </span></span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.14096355 -2.14435373 -2.15673538 -2.15952686 -2.16659099 -2.17033518 </span></span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    CACNA2D1    CACNA2D3    CACNA2D4        KRT9         MPG       KRT16 </span></span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.17039267 -2.17039267 -2.17039267 -2.18071954 -2.18071954 -2.18071954 </span></span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       APLP2      CACNG1      CACNG5      CACNG6      CACNG7       KCNJ9 </span></span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.20431078 -2.22707682 -2.22707682 -2.22707682 -2.22707682 -2.27189945 </span></span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MARK2      GAPDHS        STK3      CAMK1D        PAK4       KCNJ6 </span></span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.28406530 -2.29255526 -2.30217057 -2.30482336 -2.30807287 -2.31190075 </span></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       AURKB       OXSR1        NME1       NTRK2     MAP3K13     MAP3K10 </span></span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.31347641 -2.32260467 -2.33887145 -2.37267325 -2.37369204 -2.39759778 </span></span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        NEU1      CAMK1G      GABRA3     CACNA1A      GRIN3A      GABRG3 </span></span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.40418038 -2.42152566 -2.43360277 -2.45686471 -2.45795840 -2.46465053 </span></span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      CACNG8        PAK5      MAP4K3      MAP4K4        MT2A       LTA4H </span></span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.47364300 -2.48478397 -2.48654469 -2.48654469 -2.50217721 -2.50909248 </span></span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         SLK       PHKG1    SERPINA3        PTK6      PKMYT1        DDR2 </span></span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.51589358 -2.52839699 -2.57402238 -2.61799294 -2.62123119 -2.63129778 </span></span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       NR1I2     CYP17A1      CHRNA2      CHRNA5      CHRNB3       NUAK2 </span></span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.63129778 -2.63901239 -2.64645207 -2.64645207 -2.64645207 -2.69554951 </span></span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       HTR2C        TIE1       STK35       KRT6A        DDR1       ADRB1 </span></span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.70505357 -2.76285500 -2.76715561 -2.84105844 -2.84734424 -2.86346711 </span></span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     MAP3K12         LTK       STK24       KCNJ3       PDCD6       LRRK2 </span></span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.97091746 -3.01012060 -3.05423936 -3.06295739 -3.06624359 -3.06999373 </span></span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      GABRA2      GABRA5      GABRA6       STK26      GABRB2      GABRB3 </span></span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.07455806 -3.07455806 -3.07455806 -3.10028330 -3.11231674 -3.11231674 </span></span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     CYP11B2       HTR3A       CDK17       CDKL1       MYO3A        BRD4 </span></span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.14945625 -3.16047948 -3.16554946 -3.16554946 -3.16554946 -3.18181656 </span></span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      MAP4K5        APOD        SIK1    SERPINA4         CIT       KCNJ5 </span></span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.22782874 -3.23330731 -3.26779020 -3.27396267 -3.31779958 -3.46003287 </span></span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     PIK3C2G        SIK2       MERTK       EPHB6        AHSG         DBH </span></span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.47451430 -3.53731725 -3.53780442 -3.61459077 -3.61501949 -3.61537835 </span></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        CPN2         MT3        DRD4      MAP4K2        CES1      UGT1A1 </span></span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.74148789 -3.75037905 -3.75530590 -3.79667101 -3.86879464 -3.87594328 </span></span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       NR4A3      AKR1C1       EPHA6        ROS1        TNIK       MINK1 </span></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -4.05140443 -4.08725877 -4.11905950 -4.11905950 -4.14741721 -4.15261417 </span></span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       CDK16       KCNH2      RETSAT       MARK1     CACNA1B     CACNA1E </span></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -4.16090144 -4.16090144 -4.27064204 -4.36360482 -4.38375855 -4.38450346 </span></span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      JCHAIN       DHRS3       DHRS4       RDH11       RDH12       RDH13 </span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -4.44124658 -4.49506991 -4.49506991 -4.49506991 -4.49506991 -4.49506991 </span></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        RDH8        RDH5        PLK2      STK38L       NEK11      SRD5A1 </span></span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -4.49506991 -4.55020243 -4.88163717 -4.95135934 -5.06545055 -5.08905020 </span></span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      SRD5A2      SRD5A3       NUAK1    SERPINA1     ALDH1A1     ALDH1A2 </span></span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -5.08905020 -5.08905020 -5.16232326 -5.16844359 -5.21518519 -5.21518519 </span></span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     ALDH1A3       HTR3B       HTR3C       HTR3D       HTR3E        CBR1 </span></span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -5.21518519 -5.97389012 -5.97389012 -5.97389012 -5.97389012 -7.38250118 </span></span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       MTHFR         MTR        MTRR </span></span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        -Inf        -Inf        -Inf</span></span></code></pre></div>
+</div>
+<div id="example-3.-calculate-the-consistency-of-the-prediction" class="section level3">
+<h3>Example 3. Calculate the consistency of the prediction</h3>
+<p>The function <code>cronbach.alpha</code> and <code>kendall.w</code>
+are used to calculate the prediction consistency.</p>
+<p>If you have several prediction results, you can use either function
+to describe the consistency.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Just report the results</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kendall.w</span>(data)<span class="sc">$</span>report</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Kendall&#39;s coefficient W = 0.472, p = 0.398&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Or just report the alpha</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cronbach.alpha</span>(data)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.1931346</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
