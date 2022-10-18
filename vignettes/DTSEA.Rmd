@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(dplyr)
+library(magrittr)
 library(DTSEA)
 ```
 
@@ -46,7 +48,6 @@ The function `DTSEA` is used to calculate the enrichment scores of drugs. The pa
 -   `sampleSize`: The size of a randomly selected gene collection, where size = pathwaySize
 -   `minSize`: Minimal set of a drug set to be tested.
 -   `maxSize`: Maximal set of a drug set to be tested.
--   `nproc`: The CPU workers that fgsea would utilize.
 -   `eps`: The boundary of calculating the p value.
 -   `nPermSimple`: Number of permutations in the simple fgsea implementation for preliminary estimation of P-values.
 -   `gseaParam`: GSEA parameter value, all gene-level statistics are raised to the power of 'gseaParam' before calculating GSEA enrichment scores.
@@ -58,20 +59,35 @@ data("example_disease_list", package = "DTSEA")
 data("example_drug_target_list", package = "DTSEA")
 data("example_ppi", package = "DTSEA")
 
-# Perform a simple DTSEA analysis using default optional parameters. 
+# Perform a simple DTSEA analysis using default optional parameters then sort
+# the result dataframe by normalized enrichment scores (NES)
 result <- DTSEA(network = example_ppi,
                 disease = example_disease_list,
-                drugs = example_drug_target_list
-)
+                drugs = example_drug_target_list, verbose = FALSE
+) %>%
+  arrange(desc(NES))
 ```
 
 You can arrange the positive results by NES
 
 ```{r}
-library(dplyr)
 select(result, -leadingEdge) %>%
   arrange(desc(NES)) %>%
-  filter(NES > 0 & pval < .05)
+  filter(NES > 0 & pval < .05) %>% head()
+```
+
+Or we can draw the enrichment plot of the first predicted drug using `fgsea` package. 
+
+```{r}
+fgsea::plotEnrichment(
+  pathway = example_drug_target_list %>%
+    filter(drug_id == slice(result, 1)$drug_id) %>%
+    pull(gene_target),
+  stats = random.walk(network = example_ppi,
+                      p0 = calculate_p0(nodes = example_ppi,
+                                        disease = example_disease_list)
+                      )
+)
 ```
 
 ### Example 2. Get the influence of the specific disease in the PPI network
@@ -91,7 +107,7 @@ The function `random.walk` calculates the `pt` vector. The parameters are as fol
 p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
 
 # Then perform random walk
-random.walk(network = example_ppi, p0 = p0)
+random.walk(network = example_ppi, p0 = p0, verbose = FALSE)
 ```
 
 ### Example 3. Calculate the consistency of the prediction

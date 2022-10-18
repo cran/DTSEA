@@ -5,7 +5,7 @@
 \alias{example_disease_list}
 \title{An example vector of disease nodes}
 \format{
-An object of class \code{character} of length 113.
+An object of class \code{character} of length 63.
 }
 \usage{
 example_disease_list

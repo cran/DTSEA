@@ -9,11 +9,6 @@
 #' columns with the drug_id and drug_target.
 #' @param rwr.pt The random walk p0 vector. Set it to 0 if you wish DTSEA
 #' automatically compute it, or you can provide your predetermined p0 vector.
-#' @param sampleSize The size of a randomly selected gene collection, where
-#' size = pathwaySize
-#' @param minSize Minimal set of a drug set to be tested.
-#' @param maxSize Maximal set of a drug set to be tested.
-#' @param nproc The CPU workers that fgsea would utilize.
 #' @param eps The boundary of calculating the p value.
 #' @param nPermSimple Number of permutations in the simple fgsea implementation
 #' for preliminary estimation of P-values.
@@ -21,17 +16,17 @@
 #' to the power of 'gseaParam' before calculating of GSEA enrichment scores.
 #' @param verbose Show the messages
 #'
-#' @importFrom fgsea fgsea
+#' @importFrom fgsea fgseaMultilevel
 #' @importFrom igraph graph_from_data_frame graph_from_edgelist simplify induced_subgraph
 #' @importFrom dplyr rename %>%
 #' @importFrom tibble as_tibble
-#' @importFrom BiocParallel MulticoreParam
 #'
 #' @return The resulting dataframe consists of `drug_id`, `pval`, `padj`,
 #' `log2err`, `ES`, `NES`, `size`, and `leadingEdge`.
 #' @export
 #'
 #' @examples
+#' library(dplyr)
 #' library(DTSEA)
 #'
 #' # Load the data
@@ -39,31 +34,31 @@
 #' data("example_drug_target_list", package = "DTSEA")
 #' data("example_ppi", package = "DTSEA")
 #'
-#' # Run the DTSEA
+#' # Run the DTSEA and sort the result dataframe by normalized enrichment scores
+#' # (NES)
 #' result <- DTSEA(
 #'   network = example_ppi,
 #'   disease = example_disease_list,
 #'   drugs = example_drug_target_list
+#' ) %>%
+#' arrange(desc(NES))
+#'
+#'
+#' # We can extract the significantly NES > 0 drug items.
+#' result %>%
+#'   filter(NES > 0 & pval < .05)
+#' # Or we can draw the enrichment plot of the first predicted drug.
+#' fgsea::plotEnrichment(
+#'   pathway = example_drug_target_list %>%
+#'     filter(drug_id == slice(result, 1)$drug_id) %>%
+#'     pull(gene_target),
+#'   stats = random.walk(network = example_ppi,
+#'                       p0 = calculate_p0(nodes = example_ppi,
+#'                                         disease = example_disease_list)
+#'                       )
 #' )
 #'
-#' ## Or you can utilize the multi-core advantages by enable nproc parameters
-#' ## on non-Windows operating systems.
-#' # result <- DTSEA(
-#' #   network = example_ppi,
-#' #   disease = example_disease_list,
-#' #   drugs = example_drug_target_list,
-#' #   nproc = 10
-#' # )
-#'
-#' # We can sort the result dataframe by normalized enrichment scores (NES) and
-#' # extract the significantly NES > 0 items.
-#' library(dplyr)
-#' result %>%
-#'   arrange(desc(NES)) %>%
-#'   filter(NES > 0 & pval < .05)
-#'
-DTSEA <- function(network, disease, drugs, rwr.pt = 0, sampleSize = 101,
-                  minSize = 1, maxSize = Inf, nproc = 0, eps = 1e-50,
+DTSEA <- function(network, disease, drugs, rwr.pt = 0, eps = 1e-50,
                   nPermSimple = 5000, gseaParam = 1, verbose = TRUE) {
 
   # First, we need to simplify the whole graph
@@ -98,15 +93,8 @@ DTSEA <- function(network, disease, drugs, rwr.pt = 0, sampleSize = 101,
   # The enrichment analysis aims to determine whether member S (drug genes)
   # are randomly distributed through L (RWR gene set).
   # Usually, S is biological pathways, while L is gene expression data.
-  if (nproc > 0) {
-    BPPARAM <- BiocParallel::MulticoreParam(workers = nproc)
-  } else {
-    BPPARAM <- NULL
-  }
-  result <- fgsea(
-    pathway = drug.genes, stats = rwr.pt,
-    sampleSize = sampleSize, minSize = minSize,
-    maxSize = maxSize, nproc = nproc, BPPARAM = BPPARAM, eps = eps,
+  result <- fgseaMultilevel(
+    pathways = drug.genes, stats = rwr.pt, eps = eps,
     nPermSimple = nPermSimple, gseaParam = gseaParam
   ) %>%
     as_tibble() %>%
