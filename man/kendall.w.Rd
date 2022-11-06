@@ -13,8 +13,8 @@ kendall.w(raw, correct = TRUE)
 within raters.}
 }
 \value{
-The resulting list consists of `title`, `kendall.w`, `chisq`, `df`,
-`pval`, `report`.
+The resulting list consists of \code{title}, \code{kendall.w}, \code{chisq}, \code{df},
+\code{pval}, \code{report}.
 }
 \description{
 Computes the Kendall's coefficient of concordance.

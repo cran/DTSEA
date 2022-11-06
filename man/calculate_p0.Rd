@@ -8,10 +8,10 @@
 calculate_p0(nodes, disease)
 }
 \arguments{
-\item{nodes}{The `nodes` variable can either accept the igraph object or the
+\item{nodes}{The \code{nodes} variable can either accept the igraph object or the
 nodes vector.}
 
-\item{disease}{The `disease` variable must specify the disease-affected
+\item{disease}{The \code{disease} variable must specify the disease-affected
 nodes in a short vector.}
 }
 \value{
@@ -37,5 +37,12 @@ p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
 p0 <- sort(p0, decreasing = TRUE) \%>\%
   names() \%>\%
   head(10)
+
+# If you have obtained the supplemental data, then you can compute the p0
+# in the real data set
+
+# supp_data <- get_data(c("graph", "disease_related"))
+# p0 <- calculate_p0(nodes = supp_data[["graph"]],
+#                    disease = supp_data[["disease_related"]])
 
 }

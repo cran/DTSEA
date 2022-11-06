@@ -29,9 +29,9 @@
 #' @description Drug-target interactions were downloaded and integrated from
 #' DrugBank and ChEMBL.
 #' @format A data frame with 970 rows and 3 variables:
-#' - drug_id: the DrugBank ID
-#' - drug_name: the name of each drug
-#' - gene_target: the targets of drugs
+#' - `drug_id`: the DrugBank ID
+#' - `drug_name`: the name of each drug
+#' - `gene_target`: the targets of drugs
 #' @references
 #' Wishart DS, Feunang YD, Guo AC, Lo EJ, Marcu A, Grant JR, Sajed T, Johnson D,
 #' Li C, Sayeeda Z, Assempour N, Iynkkaran I, Liu Y, Maciejewski A, Gale N,
@@ -52,10 +52,9 @@
 "example_drug_target_list"
 
 
-#' @title An example human protein-protein interactome graph object
-#' @description We extracted the protein-protein interactions from multiple
-#' biological pathways with experimental evidence and then integrated them from
-#' three different databases.
+#' @title An example human gene functional interaction network object
+#' @description We extracted the gene functional interaction network from
+#' multiple sources with experimental evidence and then integrated them.
 #' @format An igraph object
 #' @references
 #' Kanehisa M, Furumichi M, Sato Y, Ishiguro-Watanabe M, Tanabe M. KEGG:

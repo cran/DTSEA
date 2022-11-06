@@ -36,14 +36,14 @@ cronbach.alpha <- function(data) {
     stop("The input data should have more than two columns. ")
   }
 
-  variance.total <- apply(data, 1, sum) %>%
+  variance.byrow <- apply(data, 1, sum) %>%
     var()
-  variance.byrow <- apply(data, 2, sd) %>%
+  variance.bycolumn <- apply(data, 2, sd) %>%
     raise_to_power(2) %>%
     sum()
   alpha <- multiply_by(
     e1 = 1 + 1 / (ncol(data) - 1),
-    e2 = (1 - variance.byrow / variance.total)
+    e2 = (1 - variance.bycolumn / variance.byrow)
   )
 
   return(alpha)

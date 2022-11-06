@@ -9,6 +9,10 @@ DTSEA(
   disease,
   drugs,
   rwr.pt = 0,
+  sampleSize = 101,
+  minSize = 1,
+  maxSize = Inf,
+  nproc = 0,
   eps = 1e-50,
   nPermSimple = 5000,
   gseaParam = 1,
@@ -27,6 +31,15 @@ columns with the drug_id and drug_target.}
 \item{rwr.pt}{The random walk p0 vector. Set it to 0 if you wish DTSEA
 automatically compute it, or you can provide your predetermined p0 vector.}
 
+\item{sampleSize}{The size of a randomly selected gene collection, where
+size = pathwaySize}
+
+\item{minSize}{Minimal set of a drug set to be tested.}
+
+\item{maxSize}{Maximal set of a drug set to be tested.}
+
+\item{nproc}{The CPU workers that fgsea would utilize.}
+
 \item{eps}{The boundary of calculating the p value.}
 
 \item{nPermSimple}{Number of permutations in the simple fgsea implementation
@@ -38,8 +51,8 @@ to the power of 'gseaParam' before calculating of GSEA enrichment scores.}
 \item{verbose}{Show the messages}
 }
 \value{
-The resulting dataframe consists of `drug_id`, `pval`, `padj`,
-`log2err`, `ES`, `NES`, `size`, and `leadingEdge`.
+The resulting dataframe consists of \code{drug_id}, \code{pval}, \code{padj},
+\code{log2err}, \code{ES}, \code{NES}, \code{size}, and \code{leadingEdge}.
 }
 \description{
 The DTSEA function determines whether a drug is potent for a
@@ -57,19 +70,28 @@ data("example_ppi", package = "DTSEA")
 
 # Run the DTSEA and sort the result dataframe by normalized enrichment scores
 # (NES)
-result <- DTSEA(
+\donttest{result <- DTSEA(
   network = example_ppi,
   disease = example_disease_list,
-  drugs = example_drug_target_list
+  drugs = example_drug_target_list,
+  verbose = FALSE
 ) \%>\%
-arrange(desc(NES))
+arrange(desc(NES))}
 
+# Or you can utilize the multi-core advantages by enable nproc parameters
+# on non-Windows operating systems.
+\dontrun{result <- DTSEA(
+         network = example_ppi,
+         disease = example_disease_list,
+         drugs = example_drug_target_list,
+         nproc = 10, verbose = FALSE
+)}
 
 # We can extract the significantly NES > 0 drug items.
-result \%>\%
-  filter(NES > 0 & pval < .05)
+\donttest{result \%>\%
+  filter(NES > 0 & pval < .05)}
 # Or we can draw the enrichment plot of the first predicted drug.
-fgsea::plotEnrichment(
+\donttest{fgsea::plotEnrichment(
   pathway = example_drug_target_list \%>\%
     filter(drug_id == slice(result, 1)$drug_id) \%>\%
     pull(gene_target),
@@ -77,6 +99,15 @@ fgsea::plotEnrichment(
                       p0 = calculate_p0(nodes = example_ppi,
                                         disease = example_disease_list)
                       )
-)
+)}
+
+# If you have obtained the supplemental data, then you can do random walk
+# with restart in the real data set
+
+# supp_data <- get_data(c("graph", "disease_related", "example_ppi"))
+# result <- DTSEA(network = supp_data[["graph"]],
+#                disease = supp_data[["disease_related"]],
+#                drugs = supp_data[["drug_targets"]],
+#                verbose = FALSE)
 
 }

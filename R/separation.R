@@ -58,6 +58,7 @@ separation <- function(graph, set_a, set_b) {
 #'
 #' @importFrom igraph shortest.paths
 #' @importFrom dplyr %>%
+#' @keywords internal
 #' @return a positive number
 calculate_between <- function(graph, set_a, set_b) {
   groups <- list(set_a = set_a, set_b = set_b)
@@ -80,6 +81,7 @@ calculate_between <- function(graph, set_a, set_b) {
 #'
 #' @importFrom igraph shortest.paths
 #' @importFrom dplyr %>%
+#' @keywords internal
 #' @return a positive number
 calculate_within <- function(graph, given_set) {
   within <- sapply(given_set, function(i) {

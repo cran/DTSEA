@@ -9,7 +9,7 @@ library(dplyr)
 library(magrittr)
 library(DTSEA)
 
-## ----echo = FALSE-------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Load the data
 data("example_disease_list", package = "DTSEA")
 data("example_drug_target_list", package = "DTSEA")
@@ -22,6 +22,7 @@ result <- DTSEA(network = example_ppi,
                 drugs = example_drug_target_list, verbose = FALSE
 ) %>%
   arrange(desc(NES))
+head(result)
 
 ## -----------------------------------------------------------------------------
 select(result, -leadingEdge) %>%
@@ -44,7 +45,8 @@ fgsea::plotEnrichment(
 p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
 
 # Then perform random walk
-random.walk(network = example_ppi, p0 = p0, verbose = FALSE)
+random.walk(network = example_ppi, p0 = p0, verbose = FALSE) %>%
+  head()
 
 ## ----echo = FALSE-------------------------------------------------------------
 # Imagine there are three prediction results with ten samples
@@ -59,4 +61,36 @@ kendall.w(data)$report
 
 # Or just report the alpha
 cronbach.alpha(data)
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  # Load the data
+#  data("example_disease_list", package = "DTSEA")
+#  data("example_drug_target_list", package = "DTSEA")
+#  data("example_ppi", package = "DTSEA")
+#  
+#  # set up environment
+#  
+#  single.core <- function() {
+#   suppressWarnings(capture.output(DTSEA(network = example_ppi,
+#                                         disease = example_disease_list,
+#                                         drugs = example_drug_target_list,
+#                                         nproc = 0)))
+#    NULL
+#  }
+#  
+#  dual.core <- function() {
+#   suppressWarnings(capture.output(DTSEA(network = example_ppi,
+#                                         disease = example_disease_list,
+#                                         drugs = example_drug_target_list,
+#                                         nproc = 10)))
+#    NULL
+#  }
+#  
+#  system.time(single.core()) - system.time(dual.core())
+#  
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  if (!"devtools" %in% as.data.frame(installed.packages())$Package)
+#    install.packages("devtools")
+#  devtools::install_github("hanjunwei-lab/DTSEAdata")
 

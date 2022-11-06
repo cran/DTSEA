@@ -27,17 +27,18 @@ The latest base R is recommended. The compatibility of the earlier version (v4.0
 
 ### Step 2. Install the package
 
-The dependency `fgsea` is unavailable on the CRAN but is available on [BioConductor](https://www.bioconductor.org/). So we need to install the BiocManager first. 
+The dependency `fgsea` and `BiocParallel` are unavailable on the CRAN but available on [BioConductor](https://www.bioconductor.org/). So we need to install the BiocManager manually. 
 
 ``` r
-install.packages("BiocManager")
-BiocManager::install()
-BiocManager::install("fgsea")
+if (!"BiocManager" %in% as.data.frame(installed.packages())$Package)
+  install.packages("BiocManager")
+BiocManager::install(c("fgsea", "BiocParallel"))
 ```
 Then you can install the development version of DTSEA from [GitHub](https://github.com/) with:
 
 ``` r
-install.packages("devtools")
+if (!"devtools" %in% as.data.frame(installed.packages())$Package)
+  install.packages("devtools")
 devtools::install_github("hanjunwei-lab/DTSEA")
 ```
 
@@ -65,22 +66,34 @@ result <- DTSEA(
 You can enable the multicore feature to utilize the multicore advantages. Here is the benchmark. 
 
 ``` r
-> # set up environment
-> 
-> single.core <- function() {
->   suppressWarnings(capture.output(DTSEA(network = example_ppi, disease = example_disease_list, drugs = example_drug_target_list, nproc = 0)))
->   NULL
-> }
-> 
-> dual.core <- function() {
->   suppressWarnings(capture.output(DTSEA(network = example_ppi, disease = example_disease_list, drugs = example_drug_target_list, nproc = 2)))
->   NULL
-> }
-> 
-> single.core()
-> dual.core()
+# set up environment
 
+single.core <- function() {
+  suppressWarnings(capture.output(DTSEA(network = example_ppi, disease = example_disease_list, drugs = example_drug_target_list, nproc = 0)))
+  NULL
+}
+
+dual.core <- function() {
+  suppressWarnings(capture.output(DTSEA(network = example_ppi, disease = example_disease_list, drugs = example_drug_target_list, nproc = 10)))
+  NULL
+}
+
+single.core()
+dual.core()
 ```
+
+### Supplementary data files
+
+In this package, we provide the example data, which is a small set of data to demonstrate the usage and the main idea behind DTSEA. 
+We provide some extra data files, the real data we used in the DTSEA paper. 
+The supplementary package is now on the [GitHub](https://github.com/hanjunwei-lab/DTSEAdata). Anyone can obtain this package by:
+
+```{r echo=FALSE}
+if (!"devtools" %in% as.data.frame(installed.packages())$Package)
+  install.packages("devtools")
+devtools::install_github("hanjunwei-lab/DTSEAdata")
+```
+
 ## Known bugs
 
 The Intel Math Kernel Library (MKL) performs poorly with this package when dealing with linear algebra operations. If you use MKL-based BLAS or MKL-based R distribution (like [Microsoft R Open](https://mran.microsoft.com/)), you will get unexpected or zero results in certain circumstances. Please install the Automatically Tuned Linear Algebra package (libatlas) or the multi-threaded OpenBlas library in order to get higher performance and reliable results with:

@@ -3,7 +3,7 @@
 \docType{data}
 \name{example_ppi}
 \alias{example_ppi}
-\title{An example human protein-protein interactome graph object}
+\title{An example human gene functional interaction network object}
 \format{
 An igraph object
 }
@@ -11,9 +11,8 @@ An igraph object
 example_ppi
 }
 \description{
-We extracted the protein-protein interactions from multiple
-biological pathways with experimental evidence and then integrated them from
-three different databases.
+We extracted the gene functional interaction network from
+multiple sources with experimental evidence and then integrated them.
 }
 \examples{
 library(DTSEA)

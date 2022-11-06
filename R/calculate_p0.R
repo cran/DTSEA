@@ -32,6 +32,13 @@
 #'   names() %>%
 #'   head(10)
 #'
+#' # If you have obtained the supplemental data, then you can compute the p0
+#' # in the real data set
+#'
+#' # supp_data <- get_data(c("graph", "disease_related"))
+#' # p0 <- calculate_p0(nodes = supp_data[["graph"]],
+#' #                    disease = supp_data[["disease_related"]])
+#'
 calculate_p0 <- function(nodes, disease) {
   # add some nonsense statement to pass the test
   symbol <- NULL

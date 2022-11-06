@@ -6,9 +6,11 @@
 \title{An example data frame of drug target lists}
 \format{
 A data frame with 970 rows and 3 variables:
-- drug_id: the DrugBank ID
-- drug_name: the name of each drug
-- gene_target: the targets of drugs
+\itemize{
+\item \code{drug_id}: the DrugBank ID
+\item \code{drug_name}: the name of each drug
+\item \code{gene_target}: the targets of drugs
+}
 }
 \usage{
 example_drug_target_list

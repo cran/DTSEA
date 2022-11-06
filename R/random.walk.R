@@ -6,19 +6,20 @@
 #' all nodes in the graph to the seeds.
 #' @param network The input graph object. It should be either an igraph object
 #' or an edge list matrix / data frame.
-#' @param p0 The starting vector on time 0.
+#' @param p0 The starting vector on time t0.
 #' @param edge_weight Logical to indicate whether the input graph contains
 #' weight information.
 #' @param gamma The restart probability used for RwR. The `gamma` takes the
-#' value from 0 to 1, controlling the probability that a node would go back
-#' to its starting node.
+#' value from **0** to **1**, controlling the probability that a node would go
+#' back to its starting node.
 #' @param threshold The threshold used for RwR. The `threshold` indicates the
 #' stabilization status, which is a stopping criterion of RwR.
 #' @param pt.post.processing The way to scale the `pt` vector. It can be
 #' 'none', 'zscore', and 'log'.
 #' @param pt.align The way to normalize the output `pt` vector. It can be
-#' 'mean' to manually cut the up- and down-regulated genes, 'median' to avoid
-#' the influence of the distribution shape, or 'none' for no normalization.
+#' **mean** to manually cut the up- and down-regulated genes, **median** to
+#' avoid the influence of the distribution shape, or **none** for no
+#' normalization.
 #' @param verbose Show the progress of the calculation.
 #'
 #' @importFrom dplyr %>% between arrange pull left_join mutate
@@ -39,11 +40,20 @@
 #' data("example_ppi", package = "DTSEA")
 #'
 #' # Perform random walk
-#' p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
-#' pt <- random.walk(network = example_ppi, p0 = p0)
+#' \donttest{p0 <- calculate_p0(nodes = example_ppi, disease = example_disease_list)
+#' pt <- random.walk(network = example_ppi, p0 = p0)}
 #'
 #' # Perform GSEA analysis
 #' # ....
+#'
+#' # If you have obtained the supplemental data, then you can do random walk
+#' # with restart in the real data set
+#'
+#' # supp_data <- get_data(c("graph", "disease_related", "example_ppi"))
+#' # p0 <- calculate_p0(nodes = supp_data[["graph"]],
+#' #                    disease = supp_data[["disease_related"]])
+#' # pt <- random.walk(network = supp_data[["example_ppi"]],
+#' #                   p0 = p0)
 #'
 random.walk <- function(network, p0,
                         edge_weight = FALSE, gamma = 0.7, threshold = 1e-10,
